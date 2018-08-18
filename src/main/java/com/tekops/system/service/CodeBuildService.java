@@ -30,10 +30,15 @@ public class CodeBuildService {
     try {
       final AWSCodeBuild codeBuild = AWSCodeBuildClientBuilder.defaultClient();
 
+//      final ProjectSource source = new ProjectSource()
+//              .withType(SourceType.CODECOMMIT)
+//              .withLocation(codeBuildModel.getCodeCommitRepoLocation())
+//              .withGitCloneDepth(1)
+//              .withBuildspec(Constants.BUILD_SPEC_FILE_NAME);
       final ProjectSource source = new ProjectSource()
-              .withType(SourceType.CODECOMMIT)
+              .withType(SourceType.CODEPIPELINE)
+//              .withLocation(codeBuildModel.getCodeCommitRepoLocation())
               .withLocation(codeBuildModel.getCodeCommitRepoLocation())
-              .withGitCloneDepth(1)
               .withBuildspec(Constants.BUILD_SPEC_FILE_NAME);
 
       final ProjectEnvironment environment = new ProjectEnvironment()
@@ -41,24 +46,32 @@ public class CodeBuildService {
               .withImage(Constants.CODE_BUILD_IMAGE_NAME) // Takes care of the language, and language version, platform
               .withType(EnvironmentType.LINUX_CONTAINER);
 
+//      final ProjectArtifacts artifacts = new ProjectArtifacts()
+//              .withType(ArtifactsType.S3)
+//              .withPackaging(ArtifactPackaging.NONE)
+//              .withName(codeBuildModel.getProjectName()) // the artifact name i.e. MyProject
+//              .withPath(Constants.S3_BUCKET_PATH) // i.e. MyArtifacts
+//              .withNamespaceType(ArtifactNamespace.BUILD_ID)
+//              .withEncryptionDisabled(true);
+
       final ProjectArtifacts artifacts = new ProjectArtifacts()
-              .withType(ArtifactsType.S3)
-              .withPackaging(ArtifactPackaging.NONE)
-              .withName(codeBuildModel.getProjectName()) // the artifact name i.e. MyProject
-              .withPath(Constants.S3_BUCKET_PATH) // i.e. MyArtifacts
-              .withNamespaceType(ArtifactNamespace.BUILD_ID)
+              .withType(ArtifactsType.CODEPIPELINE)
+//              .withPackaging(ArtifactPackaging.NONE)
+//              .withName(codeBuildModel.getProjectName()) // the artifact name i.e. MyProject
+//              .withPath(Constants.S3_BUCKET_PATH) // i.e. MyArtifacts
+//              .withNamespaceType(ArtifactNamespace.BUILD_ID)
               .withEncryptionDisabled(true);
 
-      final List<BucketModel> bucketModels = commonItemsRetrieverService.fetchS3Buckets();
-      for (BucketModel bucketModel : bucketModels) {
-        if (bucketModel.getName().startsWith(Constants.S3_BUCKET_NAME_PREFIX)) {
-          artifacts.setLocation(bucketModel.getName()); // Bucket name
-          break;
-        }
-      }
+//      final List<BucketModel> bucketModels = commonItemsRetrieverService.fetchS3Buckets();
+//      for (BucketModel bucketModel : bucketModels) {
+//        if (bucketModel.getName().startsWith(Constants.S3_BUCKET_NAME_PREFIX)) {
+//          artifacts.setLocation(bucketModel.getName()); // Bucket name
+//          break;
+//        }
+//      }
 
       final CreateProjectRequest request = new CreateProjectRequest()
-              .withName(codeBuildModel.getProjectName() + Constants.SEPERATOR_CHAR + System.currentTimeMillis())
+              .withName(codeBuildModel.getProjectName())
               .withSource(source)
               .withEnvironment(environment)
               .withArtifacts(artifacts)
