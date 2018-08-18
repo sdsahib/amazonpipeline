@@ -44,14 +44,15 @@ public class CodeBuildService {
       final ProjectArtifacts artifacts = new ProjectArtifacts()
               .withType(ArtifactsType.S3)
               .withPackaging(ArtifactPackaging.NONE)
-              .withName(codeBuildModel.getProjectName()) // project name
+              .withName(codeBuildModel.getProjectName()) // the artifact name i.e. MyProject
+              .withPath(Constants.S3_BUCKET_PATH) // i.e. MyArtifacts
               .withNamespaceType(ArtifactNamespace.BUILD_ID)
               .withEncryptionDisabled(true);
 
       final List<BucketModel> bucketModels = commonItemsRetrieverService.fetchS3Buckets();
       for (BucketModel bucketModel : bucketModels) {
         if (bucketModel.getName().startsWith(Constants.S3_BUCKET_NAME_PREFIX)) {
-          artifacts.setLocation(bucketModel.getName());
+          artifacts.setLocation(bucketModel.getName()); // Bucket name
           break;
         }
       }
