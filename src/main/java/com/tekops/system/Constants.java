@@ -10,5 +10,8 @@ public class Constants {
   public static final String SEPERATOR_CHAR = "_";
   public static final String CODE_BUILD_SERVICE_ROLE_ARN = "arn:aws:iam::880423837149:role/CodeBuildAccessPolicyRole";
   public static final String CODE_PIPELINE_SERVICE_ROLE_ARN = "arn:aws:iam::880423837149:role/service-role/AWS_Events_Invoke_CodePipeline_709251510";
+  public static final String CODE_BUILD_SERVICE_ROLE_ARN_2 = "arn:aws:iam::299024323439:role/CodeBuildServiceRole-latest";
+  public static final String S3_BUCKET_PATH = "MyArtifacts";
+//  public static final String EB_STACK_NAME = "64bit Amazon Linux 2018.03 v3.0.2 running Tomcat 8.5 Java 8";
   private Constants(){}
 }
