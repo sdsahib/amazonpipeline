@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/code-commit")
+@RestController
+@RequestMapping("/code-commit")
 public class CodeCommitController {
 
   @Autowired
