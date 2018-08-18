@@ -74,8 +74,8 @@ public class CodePipelineController {
             if(result != null && result.getPipeline() != null){
                 try {
                     //TODO: need to change the ARN accounts.
-                    String repoArn = "arn:aws:codecommit:ap-south-1:880423837149:" + request.getCodeCommitRepoName();
-                    String pipelineArn = "arn:aws:codepipeline:ap-south-1:880423837149:" + request.getPipelineName();
+                    String repoArn = "arn:aws:codecommit:ap-south-1:" + Constants.ACCOUNT_ID + ":" + request.getCodeCommitRepoName();
+                    String pipelineArn = "arn:aws:codepipeline:ap-south-1:" + Constants.ACCOUNT_ID + ":" + request.getPipelineName();
                     String ruleName = "codecommit_rule_" + request.getCodeCommitRepoName();
                     PutRuleResult putRuleResult = cloudWatchEventService.createEventRule(ruleName, repoArn);
                     logger.info("Event rule created, response={}",putRuleResult);

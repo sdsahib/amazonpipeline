@@ -3,6 +3,7 @@ package com.tekops.system.service;
 import com.amazonaws.services.codepipeline.AWSCodePipeline;
 import com.amazonaws.services.codepipeline.AWSCodePipelineClientBuilder;
 import com.amazonaws.services.codepipeline.model.*;
+import com.tekops.system.Constants;
 import com.tekops.system.model.CodePipelineRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,19 +23,21 @@ public class CodePipelineService {
         try {
             AWSCodePipeline pipeline = AWSCodePipelineClientBuilder.defaultClient();
 
+            final String outputArtifactForSource = request.getBuildProjectName() + Constants.SEPERATOR_CHAR + System.currentTimeMillis();
+            final String outputArtifactForBuild = request.getBuildProjectName() + Constants.SEPERATOR_CHAR + System.currentTimeMillis() + "war";
             List<StageDeclaration> stageDeclarations = new ArrayList<>();
-            stageDeclarations.add(createSourceStageDeclaration(request.getCodeCommitBranchName(), request.getCodeCommitRepoName(), request.getCodeCommitOutputAppName()));
-            stageDeclarations.add(createBuildStageDeclaration(request.getBuildProjectName(), request.getBuildInputAppName(), request.getBuildOutputAppName()));
-            stageDeclarations.add(createStagingStageDeclaration(request.getBeanstalkAppName(), request.getBeanstalkAppEnv(), request.getStagingInputAppName()));
+            stageDeclarations.add(createSourceStageDeclaration(Constants.WATCHED_CODE_COMMIT_BRANCH, request.getCodeCommitRepoName(), outputArtifactForSource));
+            stageDeclarations.add(createBuildStageDeclaration(request.getBuildProjectName(), outputArtifactForSource, outputArtifactForBuild));
+            stageDeclarations.add(createStagingStageDeclaration(request.getBeanstalkAppName(), request.getBeanstalkAppEnv(), outputArtifactForBuild));
 
 
             ArtifactStore artifactStore = new ArtifactStore();
-            artifactStore.setLocation(request.getCodePipelineS3Location());
+            artifactStore.setLocation(Constants.S3_BUCKET_NAME);
             artifactStore.setType("S3");
 
             PipelineDeclaration pipelineDeclaration = new PipelineDeclaration();
             pipelineDeclaration.setName(request.getPipelineName());
-            pipelineDeclaration.setRoleArn(request.getCodePipelineRoleARN());
+            pipelineDeclaration.setRoleArn(Constants.CODE_PIPELINE_SERVICE_ROLE);
             pipelineDeclaration.setArtifactStore(artifactStore);
             pipelineDeclaration.setStages(stageDeclarations);
             pipelineDeclaration.setVersion(1);
