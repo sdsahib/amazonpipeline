@@ -125,7 +125,7 @@ public class CodePipelineService {
                 inputArtifacts, beanstalkAppEnv, actionTypeId, Collections.emptyList(), 1, configuration);
 
         StageDeclaration stageDeclarationSource = new StageDeclaration();
-        stageDeclarationSource.setName("Staging");
+        stageDeclarationSource.setName("Deploy");
         stageDeclarationSource.setActions(actions);
 
         return stageDeclarationSource;
