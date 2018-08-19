@@ -17,5 +17,6 @@ public class Constants {
   public static final String S3_BUCKET_NAME = "rpaul-test-bucket-1";
   public static final String WATCHED_CODE_COMMIT_BRANCH = "master";
   public static final String ACCOUNT_ID = "299024323439";
+  public static final String WAR_DEFAULT_PATH = "demoapp.war";
   private Constants(){}
 }

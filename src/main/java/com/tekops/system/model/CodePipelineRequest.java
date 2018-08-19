@@ -10,6 +10,4 @@ public class CodePipelineRequest {
     private String pipelineName;
     private String codeCommitRepoName;
     private String buildProjectName;
-    private String beanstalkAppName;
-    private String beanstalkAppEnv;
 }
