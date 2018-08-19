@@ -3,10 +3,13 @@ package com.tekops.system.service;
 import com.amazonaws.services.codepipeline.AWSCodePipeline;
 import com.amazonaws.services.codepipeline.AWSCodePipelineClientBuilder;
 import com.amazonaws.services.codepipeline.model.*;
+import com.amazonaws.services.elasticbeanstalk.model.ApplicationDescription;
+import com.amazonaws.services.elasticbeanstalk.model.DescribeEnvironmentsResult;
 import com.tekops.system.Constants;
 import com.tekops.system.model.CodePipelineRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,6 +22,9 @@ public class CodePipelineService {
 
     private static final Logger logger = LoggerFactory.getLogger(CodePipelineService.class);
 
+    @Autowired
+    private ElasticBeanstalkService elasticBeanstalkService;
+
     public CreatePipelineResult createCodePipeline(CodePipelineRequest request) {
         try {
             AWSCodePipeline pipeline = AWSCodePipelineClientBuilder.defaultClient();
@@ -28,8 +34,12 @@ public class CodePipelineService {
             List<StageDeclaration> stageDeclarations = new ArrayList<>();
             stageDeclarations.add(createSourceStageDeclaration(Constants.WATCHED_CODE_COMMIT_BRANCH, request.getCodeCommitRepoName(), outputArtifactForSource));
             stageDeclarations.add(createBuildStageDeclaration(request.getBuildProjectName(), outputArtifactForSource, outputArtifactForBuild));
-            stageDeclarations.add(createStagingStageDeclaration(request.getBeanstalkAppName(), request.getBeanstalkAppEnv(), outputArtifactForBuild));
 
+            String ebAppName = request.getCodeCommitRepoName() + System.currentTimeMillis();
+            ApplicationDescription applicationDescription = elasticBeanstalkService.createApplication(ebAppName, ebAppName + " sample description");
+            String envName =  elasticBeanstalkService.createEnvironment(ebAppName, ebAppName + " sample description");
+            stageDeclarations.add(createStagingStageDeclaration(applicationDescription.getApplicationName(),
+                    envName, outputArtifactForBuild));
 
             ArtifactStore artifactStore = new ArtifactStore();
             artifactStore.setLocation(Constants.S3_BUCKET_NAME);
