@@ -15,17 +15,20 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Handles CodeCommit related AWS service calls.
+ * @author rapaul
+ */
 @Service
 @Slf4j
 public class CodeCommitService {
 
-  public boolean createRepository(CodeCommitModel codeCommitModel) {
+  public boolean createRepository(final CodeCommitModel codeCommitModel) {
     try {
       final List<CodeCommitModel> codeCommitModels = getRepositoryList();
-      for (CodeCommitModel tempCodeCommitModel : codeCommitModels) {
+      for (final CodeCommitModel tempCodeCommitModel : codeCommitModels) {
         if (tempCodeCommitModel.getRepositoryName().equals(codeCommitModel.getRepositoryName())) {
-          log.info("The repo already exists -> " + codeCommitModel.getRepositoryName());
+          log.info(String.format("The repo with the name {0} already exists. "), codeCommitModel.getRepositoryName());
           return false;
         }
       }
@@ -33,14 +36,13 @@ public class CodeCommitService {
               .withRepositoryName(codeCommitModel.getRepositoryName())
               .withRepositoryDescription(codeCommitModel.getRepositoryDescription());
 
-      //will access the token from the credentials file in aws in user directory
       final AWSCodeCommit awsCodeCommit = AWSCodeCommitClientBuilder.defaultClient();
-      final CreateRepositoryResult result = awsCodeCommit.createRepository(createRepositoryRequest);
-      log.info("Created CodeCommit repo details -> " + result);
+      final CreateRepositoryResult createRepositoryResult = awsCodeCommit.createRepository(createRepositoryRequest);
+      log.info("Created CodeCommit repository. Here is the response from AWS -> " + createRepositoryResult);
       return true;
     } catch (Exception e) {
       ExceptionUtils.printRootCauseStackTrace(e);
-      log.error("An error occurred while creating the CodeCommit repo. Error details -> "
+      log.error("An error occurred while creating the CodeCommit repository. Error details -> "
               + ExceptionUtils.getStackTrace(e));
       return false;
     }
